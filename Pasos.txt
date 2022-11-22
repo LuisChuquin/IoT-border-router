@@ -1,0 +1,75 @@
+#########################################################
+#	IPv6 NETWORKING WITH BORDER ROUTER		#
+#########################################################
+
+##############################################
+#   COMPILE FIRMWARE FOR THE BORDER ROUTER   #
+##############################################
+
+ssh chuquin@strasbourg.iot-lab.info
+cd iot-lab/parts/RIOT/examples/gnrc_border_router
+source /opt/riot.source
+make ETHOS_BAUDRATE=115200 DEFAULT_CHANNEL=21 BOARD=openmote-b clean all
+
+###############################################
+#   DOWNLOAD FIRMWARE TO YOUR LOCAL STORAGE   #
+###############################################
+
+scp chuquin@strasbourg.iot-lab.info:/senslab/users/chuquin/iot-lab/parts/RIOT/examples/gnrc_border_router/bin/openmote-b/gnrc_border_router.elf /home/user/Downloads/openmote-border_router.elf
+
+
+cd /home/user/Downloads
+cp openmoteb-border-router.elf /media/sf_Documents/.
+ls
+
+
+--------------Crear el experimento con 3 nodos ----------------------
+
+**********Seleccionar el número de un nodo y encender***********
+
+**********No flashear el openmoteb-border-router.elf todavía**************
+
+###############################################
+#   CONFIGURE NETWORK OF THE BORDER ROUTER/   #
+#  PROPAGATE IPv6 PREFIX WITH ETHOS_UHCPD.PY  #
+###############################################
+
+sudo ethos_uhcpd.py openmoteb-5 tap0 2a07:2e40:fffe:00e4::/64
+
+(Now, you must flash the firmware to your openmote border router. Use the dashboard without opening the console)
+
+(Don't close the terminal! Don't kill the process executing)
+
+**********Flashear el openmoteb-border-router.elf **************
+
+
+##############################################
+#    COMPILE FIRMWARE FOR THE OTHER NODES    #
+##############################################
+
+cd iot-lab/parts/RIOT/examples/gnrc_networking
+source /opt/riot.source
+make DEFAULT_CHANNEL=21 BOARD=openmote-b clean all
+
+scp chuquin@strasbourg.iot-lab.info:/senslab/users/kjuma/iot-lab/parts/RIOT/examples/gnrc_networking/bin/openmote-b/gnrc_networking.elf /home/keneth/Downloads/openmoteb-ipv6-networking.elf
+
+
+cd /home/user/Downloads/
+cp openmoteb-ipv6-networking.elf /media/sf_Documents/.
+ls
+
+
+**********Flashear el openmoteb-ipv6-networking.elf  en los dos nodos restantes *********************
+
+---------------EN la consola de los nodos -------------------
+ifconifg 7
+ping 6 dirección ipv6 del nodo %7
+
+ping6 2001:4860:4860::8888   (DNS Google)
+
+
+
+
+
+
+
